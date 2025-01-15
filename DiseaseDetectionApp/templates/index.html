@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Detection</title>
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data" action="{% url 'detection' %}">
+        {% csrf_token %}
+        <label for="image_input">Upload an Image:</label>
+        <input type="file" id="image_input" name="image_input" accept="image/*" required>
+        <button type="submit">Predict</button>
+    </form>    
+    <div class="Result">
+        <p>{{ Result }}</p>
+    </div>
+</body>
+</html>

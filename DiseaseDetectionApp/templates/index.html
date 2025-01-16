@@ -14,7 +14,16 @@
         <button type="submit">Predict</button>
     </form>    
     <div class="Result">
-        <p>{{ Result }}</p>
+        {% if result %}
+            <h2>{{ result }}</h2>
+            <p>{{ confidence }}</p>
+            <h3>prevention method</h3>
+            <ul>
+                {% for method in prevention.prevention_methods %}
+                    <li>{{ method }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 </body>
 </html>

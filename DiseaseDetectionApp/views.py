@@ -1,15 +1,25 @@
 from django.shortcuts import render
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
+
 import numpy as np
 import os
 from django.conf import settings
+import json
 
 # Load the model
-model = load_model('C:/proj/PlantDiseaseDetection/DiseaseDetectionApp/tomato_disease_model.keras')
+# model = load_model('C:/proj/PlantDiseaseDetection/DiseaseDetectionApp/tomato_disease_model.keras')
+model = load_model('C:/my/PlantDiseaseDetectionRepo/DiseaseDetectionApp/tomato_disease_model.keras')
 
 def detect_disease(request):
     result = 'No prediction made.'
+    confidence = "0"
+
+    with open('C:/my/PlantDiseaseDetectionRepo/DiseaseDetectionApp/prevention_methods.json', 'r') as file:
+        prevention_methods = json.load(file)
+
+    context = {'result': result, 'confidence': confidence}  # Initialize context
+
     if request.method == "POST" and 'image_input' in request.FILES:
         # Get the uploaded file
         uploaded_file = request.FILES['image_input']
@@ -48,11 +58,22 @@ def detect_disease(request):
                 'Tomato___healthy'
             ]
             result = f"Predicted label: {class_labels[predicted_class[0]]}"
+            confidence = f"Confidence score: {predictions[0][predicted_class[0]]*100:.1f} / 100"
+            disease = class_labels[predicted_class[0]]
+            prevention = prevention_methods.get(disease, [])
 
+            context = {
+                'result': result,
+                'confidence': confidence,
+                'prevention': prevention
+
+            }
         except Exception as e:
             result = f"Error processing the image: {e}"
-
-    return render(request, 'index.html', {'Result': result})
+            context = {
+                'result': result
+            }
+    return render(request, 'index.html', context)
 
 # Create your views here.
 def index(request):
